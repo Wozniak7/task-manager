@@ -1,42 +1,39 @@
 <?php
-require_once 'db.php';
+require_once 'db.php'; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['id'] ?? null;
 
     if (empty($id) || !is_numeric($id)) {
-        echo "<script>alert('ID da tarefa inválido!'); window.location.href='index.php';</script>";
+        header("Location: index.php?message=validation_error&type=error&error=" . urlencode("ID da tarefa inválido!"));
         exit;
     }
 
     $sql = "DELETE FROM tasks WHERE id = ?";
-
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
-        die("Erro na preparação da declaração: " . $conn->error);
+        header("Location: index.php?message=error_delete&type=error&error=" . urlencode($conn->error));
+        exit;
     }
 
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
         if ($stmt->affected_rows > 0) {
-            $stmt->close();
-            $conn->close();
-            header("Location: index.php?message=success_delete");
+            header("Location: index.php?message=success_delete&type=success");
             exit();
         } else {
-            $stmt->close();
-            $conn->close();
-            header("Location: index.php?message=error_delete_not_found");
+            header("Location: index.php?message=error_delete_not_found&type=warning");
             exit();
         }
     } else {
-        $stmt->close();
-        $conn->close();
-        header("Location: index.php?message=error_delete&error=" . urlencode($stmt->error));
+        header("Location: index.php?message=error_delete&type=error&error=" . urlencode($stmt->error));
         exit();
     }
+
+    $stmt->close();
+    $conn->close();
 
 } else {
     header("Location: index.php");
