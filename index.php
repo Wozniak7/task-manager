@@ -1,8 +1,66 @@
 <?php
-require_once 'db.php'; 
+require_once 'db.php';
 
 $sql = "SELECT id, title, description, due_date, status FROM tasks ORDER BY created_at DESC";
-$result = $conn->query($sql); 
+$result = $conn->query($sql);
+
+if (isset($_GET['message'])) {
+    $message_type = 'info';
+    $message_text = '';
+
+    switch ($_GET['message']) {
+        case 'success_add':
+            $message_type = 'success';
+            $message_text = 'Tarefa adicionada com sucesso!';
+            break;
+        case 'success_update':
+            $message_type = 'success';
+            $message_text = 'Tarefa atualizada com sucesso!';
+            break;
+        case 'success_delete':
+            $message_type = 'success';
+            $message_text = 'Tarefa excluída com sucesso!';
+            break;
+        case 'info_no_change':
+            $message_type = 'info';
+            $message_text = 'Nenhuma alteração foi feita na tarefa.';
+            break;
+        case 'error_add':
+            $message_type = 'error';
+            $message_text = 'Erro ao adicionar tarefa.';
+            if (isset($_GET['error'])) {
+                $message_text .= ' Detalhes: ' . htmlspecialchars($_GET['error']);
+            }
+            break;
+        case 'error_update':
+            $message_type = 'error';
+            $message_text = 'Erro ao atualizar tarefa.';
+            if (isset($_GET['error'])) {
+                $message_text .= ' Detalhes: ' . htmlspecialchars($_GET['error']);
+            }
+            break;
+        case 'error_delete':
+            $message_type = 'error';
+            $message_text = 'Erro ao excluir tarefa.';
+            if (isset($_GET['error'])) {
+                $message_text .= ' Detalhes: ' . htmlspecialchars($_GET['error']);
+            }
+            break;
+        case 'error_not_found':
+            $message_type = 'error';
+            $message_text = 'A tarefa solicitada não foi encontrada.';
+            break;
+        case 'error_no_id':
+            $message_type = 'error';
+            $message_text = 'ID da tarefa não fornecido ou inválido.';
+            break;
+        default:
+            $message_type = 'info';
+            $message_text = 'Operação concluída.';
+            break;
+    }
+    echo '<div class="message ' . $message_type . '">' . $message_text . '</div>';
+}
 ?>
 
 <!DOCTYPE html>

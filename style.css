@@ -49,6 +49,7 @@ h3 {
 .edit-button {
     background-color: #007bff;
     color: white;
+    height: 50% !important;
 }
 
 .edit-button:hover {
@@ -58,6 +59,7 @@ h3 {
 .delete-button {
     background-color: #dc3545;
     color: white;
+    height: 80% !important;
 }
 
 .delete-button:hover {
