@@ -1,7 +1,13 @@
 <?php
-require_once 'db.php'; 
+require_once 'db.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $current_user_id = $_SESSION['user_id'];
     $id = $_POST['id'] ?? null;
 
     if (empty($id) || !is_numeric($id)) {
@@ -9,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $sql = "DELETE FROM tasks WHERE id = ?";
+    $sql = "DELETE FROM tasks WHERE id = ? AND user_id = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
@@ -17,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $stmt->bind_param("i", $id);
+    $stmt->bind_param("ii", $id, $current_user_id);
 
     if ($stmt->execute()) {
         if ($stmt->affected_rows > 0) {
@@ -34,9 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $stmt->close();
     $conn->close();
-
 } else {
     header("Location: index.php");
     exit();
 }
-?>

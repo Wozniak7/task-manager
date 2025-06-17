@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 $servername = "localhost";
 $username = "root";
@@ -11,4 +12,3 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 $conn->set_charset("utf8mb4");
-?>

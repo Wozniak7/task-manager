@@ -1,7 +1,13 @@
 <?php
-require_once 'db.php'; 
+require_once 'db.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $current_user_id = $_SESSION['user_id'];
     $id = $_POST['id'] ?? null;
     $title = $_POST['title'] ?? '';
     $description = $_POST['description'] ?? '';
@@ -22,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $sql = "UPDATE tasks SET title = ?, description = ?, due_date = ?, status = ? WHERE id = ?";
+    $sql = "UPDATE tasks SET title = ?, description = ?, due_date = ?, status = ? WHERE id = ? AND user_id = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
@@ -30,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $stmt->bind_param("ssssi", $title, $description, $due_date, $status, $id);
+    $stmt->bind_param("ssssii", $title, $description, $due_date, $status, $id, $current_user_id);
 
     if ($stmt->execute()) {
         if ($stmt->affected_rows > 0) {
@@ -47,9 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $stmt->close();
     $conn->close();
-
 } else {
     header("Location: index.php");
     exit();
 }
-?>

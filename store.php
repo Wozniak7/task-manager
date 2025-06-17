@@ -1,7 +1,13 @@
 <?php
-require_once 'db.php'; 
+require_once 'db.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $user_id = $_SESSION['user_id'];
     $title = $_POST['title'] ?? '';
     $description = $_POST['description'] ?? '';
     $due_date = $_POST['due_date'] ?? null;
@@ -17,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $sql = "INSERT INTO tasks (title, description, due_date, status) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO tasks (title, description, due_date, status, user_id) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
@@ -25,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $stmt->bind_param("ssss", $title, $description, $due_date, $status);
+    $stmt->bind_param("ssssi", $title, $description, $due_date, $status, $user_id);
 
     if ($stmt->execute()) {
         header("Location: index.php?message=success_add&type=success");
@@ -37,9 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $stmt->close();
     $conn->close();
-
 } else {
     header("Location: index.php");
     exit();
 }
-?>
